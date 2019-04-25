@@ -1,0 +1,37 @@
+# @format
+---
+config:
+  target: 'https://lmnwv7kmid.execute-api.us-east-1.amazonaws.com/dev'
+  http:
+    timeout: 10
+  phases:
+    - duration: 60
+      arrivalRate: 5
+    - duration: 120
+      arrivalRate: 5
+      rampTo: 50
+    - duration: 600
+      arrivalRate: 50
+  payload:
+    path: 'todos.csv'
+    fields:
+      - 'todos'
+    skipHeader: true
+scenarios:
+  - name: 'Create and Complete Todo'
+    flow:
+      - get:
+          url: '/todos'
+      - post:
+          url: '/todos'
+          body: 'text={{ todo }}'
+          capture:
+            json: '$.results[0].id'
+            as: 'id'
+      - get:
+          url: '/todos/{{ id }}'
+#      - think: 3
+#      - put:
+#          url: '/todos'
+#          json:
+#            productId: '{{ id }}'
